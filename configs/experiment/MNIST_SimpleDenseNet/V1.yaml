@@ -7,19 +7,26 @@ defaults:
   - override /datamodule: mnist.yaml
   - override /model: mnist.yaml
   - override /callbacks: default.yaml
-  - override /trainer: default.yaml
+  - override /logger: wandb.yaml
+  - override /trainer: gpu.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-tags: ["mnist", "simple_dense_net"]
+tags: ["dev", "V1", "mnist", "simple_dense_net"]
 
-seed: 12345
+task_name: "MNIST_SimpleDenseNet/${stage}"
+
+seed: 42
 
 trainer:
   min_epochs: 10
   max_epochs: 10
   gradient_clip_val: 0.5
+
+callbacks:
+  model_checkpoint:
+    save_top_k: -1 # save all models (Set 1 to save top model only)
 
 model:
   optimizer:
@@ -31,8 +38,10 @@ model:
 
 datamodule:
   batch_size: 64
+  num_workers: 8
 
 logger:
   wandb:
+    project: MNIST_SimpleDenseNet
     tags: ${tags}
     group: "mnist"
